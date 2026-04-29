@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useForm, ValidationError } from "@formspree/react";
 import photoPortrait from "./pictures/c6bc3783-d4ef-4d71-a5ba-1e342b9dff19.jpeg";
 import photoVenue from "./pictures/farfangan.jpg";
 import photoSea from "./pictures/9100c47e-d5a9-4c1f-966e-08e66c58e93c.jpeg";
@@ -183,12 +184,8 @@ const Details = () => (
 );
 
 const RSVPForm = () => {
+  const [fsState, handleSubmit] = useForm("mwvadpvr");
   const [form, setForm] = useState({ name: "", email: "", attending: "", guests: "0", guestNames: [], dietary: "", speech: "", message: "" });
-  const [submitted, setSubmitted] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
-
-  const SHEET_URL = "YOUR_GOOGLE_APPS_SCRIPT_URL"; // Replace with your deployed Apps Script URL
 
   const update = (k, v) => setForm(p => ({
     ...p, [k]: v,
@@ -198,29 +195,19 @@ const RSVPForm = () => {
     const names = [...p.guestNames]; names[i] = v; return { ...p, guestNames: names };
   });
 
-  const submit = async () => {
+  const submit = (e) => {
+    e.preventDefault();
     if (!form.name || !form.email || !form.attending) return;
-    setSending(true);
-    setError("");
-    try {
-      await fetch(SHEET_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          attending: form.attending === "yes" ? "Yes" : "No",
-          guests: form.guests,
-          guestNames: form.guestNames.filter(Boolean).join(", ") || "—",
-          dietary: form.dietary || "None",
-          speech: form.speech || "No",
-          message: form.message || "—",
-        }),
-      });
-      setSubmitted(true);
-    } catch { setError("Could not send. Please check your connection."); }
-    setSending(false);
+    handleSubmit({
+      name: form.name,
+      email: form.email,
+      attending: form.attending === "yes" ? "Yes" : "No",
+      guests: form.guests,
+      guestNames: form.guestNames.filter(Boolean).join(", ") || "—",
+      dietary: form.dietary || "None",
+      speech: form.speech || "No",
+      message: form.message || "—",
+    });
   };
 
   const inputStyle = {
@@ -235,7 +222,7 @@ const RSVPForm = () => {
     textTransform: "uppercase", color: SAGE, marginBottom: 6, display: "block",
   };
 
-  if (submitted) {
+  if (fsState.succeeded) {
     return (
       <section id="rsvp" style={{ padding: "100px 24px", background: CREAM, textAlign: "center" }}>
         <div style={{ maxWidth: 480, margin: "0 auto" }}>
@@ -248,10 +235,6 @@ const RSVPForm = () => {
               ? "We're so excited to celebrate with you! A confirmation email will be sent shortly."
               : "We're sorry you can't make it. You'll be missed!"}
           </p>
-          <button onClick={() => { setSubmitted(false); setForm({ name: "", email: "", attending: "", guests: "0", guestNames: [], dietary: "", speech: "", message: "" }); }}
-            style={{ marginTop: 24, padding: "10px 32px", background: "transparent", border: `1px solid ${SAGE}`, color: SAGE, fontFamily: "'Georgia', serif", fontSize: 12, letterSpacing: 2, textTransform: "uppercase", cursor: "pointer", borderRadius: 2 }}>
-            Submit Another RSVP
-          </button>
         </div>
       </section>
     );
@@ -344,16 +327,16 @@ const RSVPForm = () => {
             placeholder="Share your well wishes..." />
         </div>
 
-        <button onClick={submit} disabled={!form.name || !form.email || !form.attending || sending}
+        <button onClick={submit} disabled={!form.name || !form.email || !form.attending || fsState.submitting}
           style={{
-            width: "100%", padding: "14px", background: (!form.name || !form.email || !form.attending || sending) ? LIGHT_SAGE : SAGE,
+            width: "100%", padding: "14px", background: (!form.name || !form.email || !form.attending || fsState.submitting) ? LIGHT_SAGE : SAGE,
             color: WHITE, border: "none", fontFamily: "'Georgia', serif", fontSize: 13,
-            letterSpacing: 3, textTransform: "uppercase", cursor: (!form.name || !form.email || !form.attending || sending) ? "not-allowed" : "pointer",
+            letterSpacing: 3, textTransform: "uppercase", cursor: (!form.name || !form.email || !form.attending || fsState.submitting) ? "not-allowed" : "pointer",
             borderRadius: 2, transition: "all 0.3s",
           }}>
-          {sending ? "Sending..." : "Send RSVP"}
+          {fsState.submitting ? "Sending..." : "Send RSVP"}
         </button>
-        {error && <p style={{ color: "#c47070", fontSize: 13, marginTop: 12, textAlign: "center" }}>{error}</p>}
+        <ValidationError errors={fsState.errors} style={{ color: "#c47070", fontSize: 13, marginTop: 12, textAlign: "center" }} />
       </div>
     </section>
   );
