@@ -232,7 +232,7 @@ const RSVPForm = () => {
           </h2>
           <p style={{ fontFamily: "'Georgia', serif", fontSize: 16, color: DARK, opacity: 0.7, lineHeight: 1.8 }}>
             {form.attending === "yes"
-              ? "We're so excited to celebrate with you! A confirmation email will be sent shortly."
+              ? "We're so excited to celebrate with you!"
               : "We're sorry you can't make it. You'll be missed!"}
           </p>
         </div>
