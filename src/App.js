@@ -143,9 +143,9 @@ const Details = () => (
 
     <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 40, marginBottom: 64 }}>
       {[
-        { icon: "📅", title: "Date", line1: "Saturday", line2: "September 26, 2026" },
-        { icon: "📍", title: "Venue", line1: "Fårfängan", line2: "Klockstapelsbacken 3, Stockholm" },
-        { icon: "👗", title: "Dress Code", line1: "Suit & Dress", line2: "Adults only — no children please" },
+        { icon: "📅", title: "Date", line1: "Saturday", line2: "September 26, 2026", line3: "Adults only — no children please" },
+        { icon: "📍", title: "Venue", line1: "Fåfängan", line2: "Klockstapelsbacken 3, Stockholm" },
+        { icon: "👗", title: "Dress Code", line1: "Suit & Dress", line2: "No red, black or white dresses" },
       ].map(c => (
         <div key={c.title} style={{
           background: CREAM, padding: "36px 32px", borderRadius: 4, width: 240,
@@ -155,6 +155,7 @@ const Details = () => (
           <h3 style={{ fontFamily: "'Georgia', serif", fontSize: 14, letterSpacing: 3, textTransform: "uppercase", color: SAGE, marginBottom: 12, fontWeight: 400 }}>{c.title}</h3>
           <p style={{ fontFamily: "'Georgia', serif", fontSize: 16, color: DARK, margin: 0 }}>{c.line1}</p>
           <p style={{ fontSize: 13, color: DARK, opacity: 0.6, margin: "4px 0 0" }}>{c.line2}</p>
+          {c.line3 && <p style={{ fontSize: 13, color: DARK, opacity: 0.6, margin: "4px 0 0" }}>{c.line3}</p>}
         </div>
       ))}
     </div>
@@ -359,9 +360,6 @@ const Gallery = () => {
   return (
     <>
       <section style={{ padding: "80px 24px", background: WHITE, textAlign: "center" }}>
-        <p style={{ fontFamily: "'Georgia', serif", fontSize: 12, letterSpacing: 5, textTransform: "uppercase", color: SAGE, marginBottom: 8 }}>
-          Our Journey
-        </p>
         <div style={{ width: 60, height: 1, background: BLUSH, margin: "0 auto 48px" }} />
         <div style={{
           display: "grid",
